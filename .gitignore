@@ -1,0 +1,8 @@
+*.elf
+*.oelf
+*.prx
+*.sprx
+*.o
+*.a
+*.bin
+**/git_ver.h

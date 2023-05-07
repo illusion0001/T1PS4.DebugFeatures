@@ -1,0 +1,84 @@
+name: Build modules
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+      - '**/*.txt'
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - '**/*.txt'
+  workflow_dispatch:
+
+jobs:
+  build_prx:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Checkout SDK
+      uses: actions/checkout@v3
+      with:
+        repository: GoldHEN/GoldHEN_Plugins_SDK
+        path: SDK
+
+    - name: Setup variables and dependencies
+      run: |
+        echo "llvm_ver=12.0" >> $GITHUB_ENV
+        echo "llvm_path=$RUNNER_TOOL_CACHE/llvm" >> $GITHUB_ENV
+        echo "OO_PS4_TOOLCHAIN=$GITHUB_WORKSPACE/OpenOrbis/PS4Toolchain" >> $GITHUB_ENV
+        echo "commit_ver=1.$(git rev-list HEAD --count)" >> $GITHUB_ENV
+
+    - name: Cache OpenOrbis Toolchain
+      id: cache-oosdk
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.OO_PS4_TOOLCHAIN }}
+        key: ${{ runner.os }}-oosdk
+
+    - name: Download OpenOrbis Toolchain
+      if: steps.cache-oosdk.outputs.cache-hit != 'true'
+      run: curl -sL https://github.com/illusion0001/OpenOrbis-PS4-Toolchain/releases/download/0.0.1.461/toolchain.tar.gz | tar xz -C ./
+
+    - name: Cache LLVM and Clang (${{ env.llvm_ver }})
+      id: cache-llvm
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.llvm_path }}
+        key: llvm-${{ env.llvm_ver }}
+
+    - name: Install LLVM and Clang (${{ env.llvm_ver }})
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: ${{ env.llvm_ver }}
+        directory: ${{ env.llvm_path }}
+        cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+
+    - name: Build SDK Static Lib
+      working-directory: SDK
+      run: |
+        clang -v
+        make DEBUGFLAGS=1
+        echo "GOLDHEN_SDK=$(pwd)" >> $GITHUB_ENV
+
+    - name: Build
+      run: make
+
+    - name: Push module artifact (Release prx)
+      uses: actions/upload-artifact@v3
+      with:
+        name: T1PS4.DebugFeatures_${{ env.commit_ver }}_prx_final
+        path: bin/plugins/prx_final/*
+        if-no-files-found: error
+
+    - name: Push module artifact (Release elf)
+      uses: actions/upload-artifact@v3
+      with:
+        name: T1PS4.DebugFeatures_${{ env.commit_ver }}_elf_final
+        path: bin/plugins/elf_final/*.elf
+        if-no-files-found: error
