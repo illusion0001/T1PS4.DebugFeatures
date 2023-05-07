@@ -49,10 +49,15 @@ void __attribute__((naked)) DMenu_Hook()
             ".att_syntax");
 }
 
+extern "C" {
 int32_t attr_module_hidden module_start(size_t argc, const void *args)
 {
     if (sys_sdk_proc_info(&procInfo) == 0)
     {
+        print_proc_info();
+        final_printf("[GoldHEN] %s Plugin Started.\n", g_pluginName);
+        final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
+        final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
         u8 hook_array[] = { 
             0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, // jmp qword ptr [$+6]
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // ptr
@@ -62,12 +67,8 @@ int32_t attr_module_hidden module_start(size_t argc, const void *args)
         uint64_t hookptr = (uint64_t)(void*)DMenu_Hook; // get the hook addr
         uint64_t LanSocketAddr = procInfo.base_address + 0x0001d480; // 1.00
         memcpy(arr64, &hookptr, sizeof(arr64));
-        print_proc_info();
         sys_proc_rw(LanSocketAddr, hook_array, sizeof(hook_array));
         sys_proc_rw(LanSocketAddr + 6, arr64, sizeof(arr64));
-        final_printf("[GoldHEN] %s Plugin Started.\n", g_pluginName);
-        final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
-        final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
     }
     else
     {
@@ -81,4 +82,5 @@ int32_t attr_module_hidden module_stop(size_t argc, const void *args)
     final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
     final_printf("[GoldHEN] %s Plugin Ended.\n", g_pluginName);
     return 0;
+}
 }

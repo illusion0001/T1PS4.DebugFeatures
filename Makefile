@@ -87,7 +87,7 @@ gh_sdk:
 	$(MAKE) -C $(GH_SDK) clean all PRINTF=1 DEBUGFLAGS=1
 
 plugin_common:
-	$(CC) $(CFLAGS) -o $(INTDIR)/plugin_common.o $(COMMON_DIR)/plugin_common.c
+	$(CC) $(CFLAGS) -o $(INTDIR)/plugin_common.o $(COMMON_DIR)/plugin_common.cpp
 
 build-info:
 	$(shell echo "#define GIT_COMMIT \"$(shell git rev-parse HEAD)\"" > $(COMMON_DIR)/git_ver.h)
