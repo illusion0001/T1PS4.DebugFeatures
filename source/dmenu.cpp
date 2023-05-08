@@ -1,4 +1,5 @@
 #include "dmenu.h"
+#include "memory.h"
 
 uint64_t game_base_address = 0;
 
