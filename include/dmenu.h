@@ -5,6 +5,13 @@
 
 #include "plugin_common.h"
 
+extern u64 ALLOCATE_MEMORY_ADDR;
+extern u64 CREATE_DMENU_HEADER_ADDR;
+extern u64 CREATE_DMENU_ENTRY_ADDR;
+extern u64 CREATE_DMENU_BOOL_ADDR;
+extern u64 CREATE_DMENU_FUNC_ADDR;
+extern u64 APPEND_DMENU_ADDR;
+
 #define FUNCTION_PTR(return_type, func_name, func_addr, ...) \
     typedef return_type (*func_name##_t)(__VA_ARGS__); \
     func_name##_t func_name = (func_name##_t)(func_addr);

@@ -1,13 +1,14 @@
 #include "dmenu.h"
+#include "memory.h"
 
 uint64_t game_base_address = 0;
 
-#define ALLOCATE_MEMORY_ADDR game_base_address + 0xaa5820
-#define CREATE_DMENU_HEADER_ADDR game_base_address + 0x891610
-#define CREATE_DMENU_ENTRY_ADDR game_base_address + 0x890af0
-#define CREATE_DMENU_BOOL_ADDR game_base_address + 0x88d460
-#define CREATE_DMENU_FUNC_ADDR game_base_address + 0x890550
-#define APPEND_DMENU_ADDR game_base_address + 0x8919c0
+u64 ALLOCATE_MEMORY_ADDR = 0; // game_base_address + 0xaa5820
+u64 CREATE_DMENU_HEADER_ADDR = 0; // game_base_address + 0x891610
+u64 CREATE_DMENU_ENTRY_ADDR = 0; // game_base_address + 0x890af0
+u64 CREATE_DMENU_BOOL_ADDR = 0; // game_base_address + 0x88d460
+u64 CREATE_DMENU_FUNC_ADDR = 0; // game_base_address + 0x890550
+u64 APPEND_DMENU_ADDR = 0; // game_base_address + 0x8919c0
 
 bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu_Message Message)
 {
