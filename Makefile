@@ -20,7 +20,7 @@ TARGET_ELF   := $(TARGET_PATH_ELF)/$(OUTPUT_PRX)
 TARGETSTUB   := $(OUTPUT_PRX).so
 
 # Libraries linked into the ELF.
-LIBS := -lc++ -lc -lGoldHEN_Hook -lkernel -lSceLibcInternal -lSceSysmodule
+LIBS := -lGoldHEN_Hook -lkernel -lSceLibcInternal -lSceSysmodule
 
 EXTRAFLAGS := $(DEBUG_FLAGS) $(LOG_TYPE) -Wall
 
