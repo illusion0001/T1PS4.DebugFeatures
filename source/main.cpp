@@ -36,12 +36,10 @@ int32_t attr_module_hidden module_start(size_t argc, const void *args)
     if (sys_sdk_proc_info(&procInfo) == 0)
     {
         game_base_address = procInfo.base_address;
-        // cxx printf crashes the prx :pensive:
-        // more specific vsnprintf
-        // print_proc_info();
-        // final_printf("[GoldHEN] %s Plugin Started.\n", g_pluginName);
-        // final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
-        // final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
+        print_proc_info();
+        final_printf("[GoldHEN] %s Plugin Started.\n", g_pluginName);
+        final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
+        final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
         // 15 bytes nop ptr.
         // 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00
         ALLOCATE_MEMORY_ADDR = (uint64_t)PatternScan((void*)game_base_address, "48 8d 15 ?? ?? ?? ?? be 10 00 00 00 31 c9 49 89 d0 e9 ?? ?? ?? ??");
@@ -78,15 +76,15 @@ int32_t attr_module_hidden module_start(size_t argc, const void *args)
     }
     else
     {
-        // final_printf("Failed to get process info\n");
+        final_printf("Failed to get process info\n");
     }
     return 0;
 }
 
 int32_t attr_module_hidden module_stop(size_t argc, const void *args)
 {
-    // final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
-    // final_printf("[GoldHEN] %s Plugin Ended.\n", g_pluginName);
+    final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
+    final_printf("[GoldHEN] %s Plugin Ended.\n", g_pluginName);
     return 0;
 }
 }
