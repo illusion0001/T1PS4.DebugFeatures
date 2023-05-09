@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "dmenu.h"
+#include "helper.h"
 #include "memory.h"
 #include "plugin_common.h"
 #include <orbis/libkernel.h>
@@ -43,19 +44,19 @@ int32_t attr_module_hidden module_start(size_t argc, const void *args)
         final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
         // 15 bytes nop ptr.
         // 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00
-        ALLOCATE_MEMORY_ADDR = (uint64_t)PatternScan((void*)game_base_address, "48 8d 15 ?? ?? ?? ?? be 10 00 00 00 31 c9 49 89 d0 e9 ?? ?? ?? ??");
-        CREATE_DMENU_HEADER_ADDR = (uint64_t)PatternScan((void*)game_base_address, "c6 83 94 00 00 00 00 48 c7 83 a8 00 00 00 00 00 00 00 48 c7 83 a0 00 00 00 00 00 00 00 48 c7 83 98 00 00 00 00 00 00 00") - 79;
-        CREATE_DMENU_ENTRY_ADDR = (uint64_t)PatternScan((void*)game_base_address, "48 83 c0 10 48 89 03 4c 89 bb 90 00 00 00 4c 89 b3 98 00 00 00 4d 85 f6 c7 83 80 00 00 00 01 00 00 00") - 59;
-        CREATE_DMENU_BOOL_ADDR = (uint64_t)PatternScan((void*)game_base_address, "41 8a 06 88 83 98 00 00 00 4c 89 73 50 c7 43 48 00 00 00 00 c7 83 80 00 00 00 01 00 00 00") - 66;
-        CREATE_DMENU_FUNC_ADDR = (uint64_t)PatternScan((void*)game_base_address, "c7 83 80 00 00 00 00 00 00 00 c7 83 84 00 00 00 00 00 00 00 c7 83 88 00 00 00 05 00 00 00 4c 89 63 50") - 28;
-        APPEND_DMENU_ADDR = (uint64_t)PatternScan((void*)game_base_address, "48 c7 46 38 00 00 00 00 48 89 7e 30 ff 87 84 00 00 00 c6 87 88 00 00 00 01 80 bf 94 00 00 00 00") - 46;
+        AllocateMemory = (AllocateMemory_ptr)FindAndPrintPattern((void*)game_base_address, "48 8d 15 ?? ?? ?? ?? be 10 00 00 00 31 c9 49 89 d0 e9 ?? ?? ?? ??");
+        CreateDevMenuHeader = (CreateDevMenuHeader_ptr)FindAndPrintPattern((void*)game_base_address, "c6 83 94 00 00 00 00 48 c7 83 a8 00 00 00 00 00 00 00 48 c7 83 a0 00 00 00 00 00 00 00 48 c7 83 98 00 00 00 00 00 00 00", -79);
+        CreateDevMenuEntry = (CreateDevMenuEntry_ptr)FindAndPrintPattern((void*)game_base_address, "48 83 c0 10 48 89 03 4c 89 bb 90 00 00 00 4c 89 b3 98 00 00 00 4d 85 f6 c7 83 80 00 00 00 01 00 00 00", -59);
+        CreateDevMenuBool = (CreateDevMenuBool_ptr)FindAndPrintPattern((void*)game_base_address, "41 8a 06 88 83 98 00 00 00 4c 89 73 50 c7 43 48 00 00 00 00 c7 83 80 00 00 00 01 00 00 00", -66);
+        CreateDevMenuFuncButton = (CreateDevMenuFuncButton_ptr)FindAndPrintPattern((void*)game_base_address, "c7 83 80 00 00 00 00 00 00 00 c7 83 84 00 00 00 00 00 00 00 c7 83 88 00 00 00 05 00 00 00 4c 89 63 50", -28);
+        AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern((void*)game_base_address, "48 c7 46 38 00 00 00 00 48 89 7e 30 ff 87 84 00 00 00 c6 87 88 00 00 00 01 80 bf 94 00 00 00 00", -46);
         if (
-            ALLOCATE_MEMORY_ADDR &&
-            CREATE_DMENU_HEADER_ADDR &&
-            CREATE_DMENU_ENTRY_ADDR &&
-            CREATE_DMENU_BOOL_ADDR &&
-            CREATE_DMENU_FUNC_ADDR &&
-            APPEND_DMENU_ADDR
+            AllocateMemory &&
+            CreateDevMenuHeader &&
+            CreateDevMenuEntry &&
+            CreateDevMenuBool &&
+            CreateDevMenuFuncButton &&
+            AppendNewMenuToRoot
             )
             {
                 u8 hook_array[] = { 

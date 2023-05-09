@@ -3,13 +3,6 @@
 
 uint64_t game_base_address = 0;
 
-u64 ALLOCATE_MEMORY_ADDR = 0; // game_base_address + 0xaa5820
-u64 CREATE_DMENU_HEADER_ADDR = 0; // game_base_address + 0x891610
-u64 CREATE_DMENU_ENTRY_ADDR = 0; // game_base_address + 0x890af0
-u64 CREATE_DMENU_BOOL_ADDR = 0; // game_base_address + 0x88d460
-u64 CREATE_DMENU_FUNC_ADDR = 0; // game_base_address + 0x890550
-u64 APPEND_DMENU_ADDR = 0; // game_base_address + 0x8919c0
-
 bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu_Message Message)
 {
     if (Message == OnExecute)
@@ -21,17 +14,17 @@ bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu_Message Message)
 }
 
 bool test_bool = false;
+INIT_FUNCTION_PTR(AllocateMemory);
+INIT_FUNCTION_PTR(CreateDevMenuHeader);
+INIT_FUNCTION_PTR(CreateDevMenuBool);
+INIT_FUNCTION_PTR(CreateDevMenuFuncButton);
+INIT_FUNCTION_PTR(CreateDevMenuEntry);
+INIT_FUNCTION_PTR(AppendNewMenuToRoot);
 
 void CreateDMENU_Test(uint64_t root_menu)
 {
     if (!game_base_address)
         return;
-    FUNCTION_PTR(uint64_t, AllocateMemory, ALLOCATE_MEMORY_ADDR, uint32_t memory_size);
-    FUNCTION_PTR(void, CreateDevMenuHeader, CREATE_DMENU_HEADER_ADDR, uint64_t allocated_memory, const char* menu_title, void* unk, void* unk1);
-    FUNCTION_PTR(void, CreateDevMenuEntry, CREATE_DMENU_ENTRY_ADDR, uint64_t allocated_memory, const char* menu_entry_title, uint64_t root_menu_ptr, void* unk, void* unk1);
-    FUNCTION_PTR(void, CreateDevMenuBool, CREATE_DMENU_BOOL_ADDR, uint64_t allocated_memory, const char* menu_bool_title, bool* bool_var);
-    FUNCTION_PTR(void, CreateDevMenuFuncButton, CREATE_DMENU_FUNC_ADDR, uint64_t allocated_memory, const char* menu_func_title, void* target_func, void* arg, void* unk);
-    FUNCTION_PTR(void, AppendNewMenuToRoot, APPEND_DMENU_ADDR, uint64_t root_menu_ptr, uint64_t entry_menu_ptr);
     uint64_t MyMenuPtr = AllocateMemory(DMENU_HEADER_SIZE);
     CreateDevMenuHeader(MyMenuPtr, "Test Menu", NULL, NULL);
     uint64_t MyBoolPtr = AllocateMemory(DMENU_BOOL_SIZE);
