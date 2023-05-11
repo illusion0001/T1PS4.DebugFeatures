@@ -30,23 +30,27 @@ TYPEDEF_FUNCTION_PTR(void, CreateDevMenuBool, uint64_t allocated_memory, const c
 TYPEDEF_FUNCTION_PTR(void, CreateDevMenuFuncButton, uint64_t allocated_memory, const char* menu_func_title, void* target_func, void* arg, void* unk);
 TYPEDEF_FUNCTION_PTR(void, AppendNewMenuToRoot, uint64_t root_menu_ptr, uint64_t entry_menu_ptr);
 
-enum DMenu_Message
+class DMenu
 {
-    None = 0,
-    Unk1,
-    Unk2,
-    Unk3,
-    OnExecute
-};
+public:
+    enum Message
+    {
+        None = 0,
+        Unk1,
+        Unk2,
+        Unk3,
+        OnExecute
+    };
 
-enum DMenu_FuncReturnCode
-{
-    FunctionNoAction = 0,
-    FunctionFailure = 0,
-    FunctionSuccess = 1
+    enum FuncReturnCode
+    {
+        FunctionNoAction = 0,
+        FunctionFailure = 0,
+        FunctionSuccess = 1
+    };
 };
 
 extern "C" {
-bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu_Message Message);
+bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu::Message Message);
 void CreateDMENU_Test(uint64_t root_menu);
 }

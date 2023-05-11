@@ -3,14 +3,14 @@
 
 uint64_t game_base_address = 0;
 
-bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu_Message Message)
+bool DMenu_Test_Func(uint64_t DMenuStructure, enum DMenu::Message Message)
 {
-    if (Message == OnExecute)
+    if (Message == DMenu::Message::OnExecute)
     {
         NotifyStatic(TEX_ICON_SYSTEM,  "User clicked the button!");
-        return FunctionSuccess;
+        return DMenu::FuncReturnCode::FunctionSuccess;
     }
-    return FunctionNoAction;
+    return DMenu::FuncReturnCode::FunctionNoAction;
 }
 
 bool test_bool = false;
@@ -23,8 +23,6 @@ INIT_FUNCTION_PTR(AppendNewMenuToRoot);
 
 void CreateDMENU_Test(uint64_t root_menu)
 {
-    if (!game_base_address)
-        return;
     uint64_t MyMenuPtr = AllocateMemory(DMENU_HEADER_SIZE);
     CreateDevMenuHeader(MyMenuPtr, "Test Menu", NULL, NULL);
     uint64_t MyBoolPtr = AllocateMemory(DMENU_BOOL_SIZE);
