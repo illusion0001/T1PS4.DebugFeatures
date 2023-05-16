@@ -67,6 +67,7 @@ void *DoStuff(void *args)
     CreateDevMenuFuncButton = (CreateDevMenuFuncButton_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuFuncButton, str(Patterns::CreateDevMenuFuncButton), -28);
     AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AppendNewMenuToRoot, str(Patterns::AppendNewMenuToRoot), -46);
     uint64_t CallAddr = FindAndPrintPattern(module_base, module_size, Patterns::DevMenuNullSubCallAddr, str(Patterns::DevMenuNullSubCallAddr));
+    uint64_t EnableDevMenuAddr = FindAndPrintPattern(module_base, module_size, Patterns::ForceDevMenuArg, str(Patterns::ForceDevMenuArg));
     if (
         AllocateMemory &&
         CreateDevMenuHeader &&
@@ -74,7 +75,8 @@ void *DoStuff(void *args)
         CreateDevMenuBool &&
         CreateDevMenuFuncButton &&
         AppendNewMenuToRoot &&
-        CallAddr)
+        CallAddr &&
+        EnableDevMenuAddr)
     {
         u8 hook_array[] = {
             0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,            // jmp qword ptr [$+6]
@@ -87,6 +89,8 @@ void *DoStuff(void *args)
         memcpy(arr64, &hookptr, sizeof(arr64));
         WriteBytes(LanSocketAddr, hook_array, sizeof(hook_array));
         WriteBytes(LanSocketAddr + 6, arr64, sizeof(arr64));
+        u8 enable_bool[] = {0x1};
+        WriteBytes(EnableDevMenuAddr + 3, enable_bool, sizeof(enable_bool));
     }
 #if USE_THREAD == 0
 #else

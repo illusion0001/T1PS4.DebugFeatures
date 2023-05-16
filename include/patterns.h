@@ -2,6 +2,7 @@ namespace Patterns
 {
     // should be valid for 01.00 - 01.06
     // 01.07 - 01.11 might be different
+    const char* ForceDevMenuArg = "c6 45 97 00 c6 45 c3 00 48 c7 45 88 00 00 00 00 48 c7 45 b0 00 00 00 00 48 c7 45 a8 00 00 00 00";
     const char* AllocateMemory = "48 8d 15 ?? ?? ?? ?? be 10 00 00 00 31 c9 49 89 d0 e9 ?? ?? ?? ??";
     const char* CreateDevMenuHeader = "c6 83 94 00 00 00 00 48 c7 83 a8 00 00 00 00 00 00 00 48 c7 83 a0 00 00 00 00 00 00 00 48 c7 83 98 00 00 00 00 00 00 00";
     const char* CreateDevMenuEntry = "48 83 c0 10 48 89 03 4c 89 bb 90 00 00 00 4c 89 b3 98 00 00 00 4d 85 f6 c7 83 80 00 00 00 01 00 00 00";
