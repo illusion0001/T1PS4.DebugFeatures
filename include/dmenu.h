@@ -29,6 +29,8 @@ TYPEDEF_FUNCTION_PTR(void, CreateDevMenuEntry, uint64_t allocated_memory, const 
 TYPEDEF_FUNCTION_PTR(void, CreateDevMenuBool, uint64_t allocated_memory, const char* menu_bool_title, bool* bool_var);
 TYPEDEF_FUNCTION_PTR(void, CreateDevMenuFuncButton, uint64_t allocated_memory, const char* menu_func_title, void* target_func, void* arg, void* unk);
 TYPEDEF_FUNCTION_PTR(void, AppendNewMenuToRoot, uint64_t root_menu_ptr, uint64_t entry_menu_ptr);
+TYPEDEF_FUNCTION_PTR(uint64_t*, GetSpawnerNativeFunc, uint32_t argc, void* arg, void* arg2);
+TYPEDEF_FUNCTION_PTR(uint64_t, EntitySpawnerFunc, uint64_t* spawner_struct, void* arg1, uint32_t* arg2, bool unk, uint32_t unk2, uint32_t unk3);
 
 class DMenu
 {

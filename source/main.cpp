@@ -93,6 +93,8 @@ void *DoStuff(void *args)
         AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AppendNewMenuToRoot_Neo, str(Patterns::AppendNewMenuToRoot_Neo));
         CallAddr = FindAndPrintPattern(module_base, module_size, Patterns::DevMenuNullSubCallAddr_Neo, str(Patterns::DevMenuNullSubCallAddr_Neo));
         EnableDevMenuAddr = FindAndPrintPattern(module_base, module_size, Patterns::ForceDevMenuArg_Neo, str(Patterns::ForceDevMenuArg_Neo));
+        GetSpawnerNativeFunc = (GetSpawnerNativeFunc_ptr)FindAndPrintPattern(module_base, module_size, Patterns::GetSpawnerNative_Neo, str(Patterns::GetSpawnerNative_Neo));
+        EntitySpawnerFunc = (EntitySpawnerFunc_ptr)FindAndPrintPattern(module_base, module_size, Patterns::EntitySpawner_Neo, str(Patterns::EntitySpawner_Neo));
     }
     if (
         AllocateMemory &&
