@@ -25,6 +25,8 @@ attr_public uint32_t g_pluginVersion = 0x00000100; // 1.00
 
 struct proc_info procInfo;
 
+char app_version[8] = { 0 };
+
 #define USE_THREAD 0
 
 void __attribute__((naked)) DMenu_Hook()
@@ -42,6 +44,14 @@ void DoStuff()
 void *DoStuff(void *args)
 #endif
 {
+    bool neo_version = false;
+    strncpy(app_version, procInfo.version, sizeof(app_version));
+    float ver_app = 0.f;
+    ver_app = strtod(app_version, NULL);
+    if (ver_app >= 1.07)
+    {
+        neo_version = true;
+    }
     OrbisKernelModuleInfo CurrentModuleInfo;
     CurrentModuleInfo.size = sizeof(OrbisKernelModuleInfo);
     uint64_t module_base = 0;
@@ -58,16 +68,32 @@ void *DoStuff(void *args)
     }
     final_printf("module_base: 0x%lx\n", module_base);
     final_printf("module_size: 0x%x\n", module_size);
+    uint64_t CallAddr = 0;
+    uint64_t EnableDevMenuAddr = 0;
     // 15 bytes nop ptr.
     // 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00
-    AllocateMemory = (AllocateMemory_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AllocateMemory, str(Patterns::AllocateMemory));
-    CreateDevMenuHeader = (CreateDevMenuHeader_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuHeader, str(Patterns::CreateDevMenuHeader), -79);
-    CreateDevMenuEntry = (CreateDevMenuEntry_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuEntry, str(Patterns::CreateDevMenuEntry), -59);
-    CreateDevMenuBool = (CreateDevMenuBool_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuBool, str(Patterns::CreateDevMenuBool), -66);
-    CreateDevMenuFuncButton = (CreateDevMenuFuncButton_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuFuncButton, str(Patterns::CreateDevMenuFuncButton), -28);
-    AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AppendNewMenuToRoot, str(Patterns::AppendNewMenuToRoot), -46);
-    uint64_t CallAddr = FindAndPrintPattern(module_base, module_size, Patterns::DevMenuNullSubCallAddr, str(Patterns::DevMenuNullSubCallAddr));
-    uint64_t EnableDevMenuAddr = FindAndPrintPattern(module_base, module_size, Patterns::ForceDevMenuArg, str(Patterns::ForceDevMenuArg));
+    if (!neo_version)
+    {
+        AllocateMemory = (AllocateMemory_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AllocateMemory, str(Patterns::AllocateMemory));
+        CreateDevMenuHeader = (CreateDevMenuHeader_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuHeader, str(Patterns::CreateDevMenuHeader));
+        CreateDevMenuEntry = (CreateDevMenuEntry_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuEntry, str(Patterns::CreateDevMenuEntry));
+        CreateDevMenuBool = (CreateDevMenuBool_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuBool, str(Patterns::CreateDevMenuBool));
+        CreateDevMenuFuncButton = (CreateDevMenuFuncButton_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuFuncButton, str(Patterns::CreateDevMenuFuncButton));
+        AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AppendNewMenuToRoot, str(Patterns::AppendNewMenuToRoot));
+        CallAddr = FindAndPrintPattern(module_base, module_size, Patterns::DevMenuNullSubCallAddr, str(Patterns::DevMenuNullSubCallAddr));
+        EnableDevMenuAddr = FindAndPrintPattern(module_base, module_size, Patterns::ForceDevMenuArg, str(Patterns::ForceDevMenuArg));
+    }
+    else
+    {
+        AllocateMemory = (AllocateMemory_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AllocateMemory_Neo, str(Patterns::AllocateMemory_Neo));
+        CreateDevMenuHeader = (CreateDevMenuHeader_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuHeader_Neo, str(Patterns::CreateDevMenuHeader_Neo));
+        CreateDevMenuEntry = (CreateDevMenuEntry_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuEntry_Neo, str(Patterns::CreateDevMenuEntryCreateDevMenuEntry_Neo));
+        CreateDevMenuBool = (CreateDevMenuBool_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuBool_Neo, str(Patterns::CreateDevMenuBool_Neo));
+        CreateDevMenuFuncButton = (CreateDevMenuFuncButton_ptr)FindAndPrintPattern(module_base, module_size, Patterns::CreateDevMenuFuncButton_Neo, str(Patterns::CreateDevMenuFuncButton_Neo));
+        AppendNewMenuToRoot = (AppendNewMenuToRoot_ptr)FindAndPrintPattern(module_base, module_size, Patterns::AppendNewMenuToRoot_Neo, str(Patterns::AppendNewMenuToRoot_Neo));
+        CallAddr = FindAndPrintPattern(module_base, module_size, Patterns::DevMenuNullSubCallAddr_Neo, str(Patterns::DevMenuNullSubCallAddr_Neo));
+        EnableDevMenuAddr = FindAndPrintPattern(module_base, module_size, Patterns::ForceDevMenuArg_Neo, str(Patterns::ForceDevMenuArg_Neo));
+    }
     if (
         AllocateMemory &&
         CreateDevMenuHeader &&
@@ -89,8 +115,15 @@ void *DoStuff(void *args)
         memcpy(arr64, &hookptr, sizeof(arr64));
         WriteBytes(LanSocketAddr, hook_array, sizeof(hook_array));
         WriteBytes(LanSocketAddr + 6, arr64, sizeof(arr64));
-        u8 enable_bool[] = {0x1};
-        WriteBytes(EnableDevMenuAddr + 3, enable_bool, sizeof(enable_bool));
+        u8 enable_bool[] = { 0x1 };
+        if (!neo_version)
+        {
+            WriteBytes(EnableDevMenuAddr + 3, enable_bool, sizeof(enable_bool));
+        }
+        else
+        {
+            WriteBytes(EnableDevMenuAddr + 6, enable_bool, sizeof(enable_bool));
+        }
     }
 #if USE_THREAD == 0
 #else
@@ -111,7 +144,6 @@ int32_t attr_module_hidden module_start(size_t argc, const void *args)
         final_printf("[GoldHEN] %s Plugin Started.\n", g_pluginName);
         final_printf("[GoldHEN] <%s\\Ver.0x%08x> %s\n", g_pluginName, g_pluginVersion, __func__);
         final_printf("[GoldHEN] Plugin Author(s): %s\n", g_pluginAuth);
-
 #if USE_THREAD == 0
         DoStuff();
 #else
